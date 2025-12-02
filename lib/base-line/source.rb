@@ -87,27 +87,43 @@ module Mass
 
         # scroll down the page until N event elements are showed up
         def show_up_event_elements(job:, event_limit:, max_scrolls:, take_screenshots: false, logger:nil)
-              l = logger || BlackStack::DummyLogger.new(nil)
-              driver = job.profile.driver
-              # scroll down
-              i = 0
-              prev_n_events = 0
-              security_height = 150  
-              lis = self.event_elements(job: job)
-              n_events = lis.size
-              while (i<max_scrolls || n_events>prev_n_events) && n_events<event_limit
+            l = logger || BlackStack::DummyLogger.new(nil)
+            driver = job.profile.driver
+            # scroll down
+            i = 0
+            prev_n_events = 0
+            security_height = 150  
+            lis = self.event_elements(job: job)
+            n_events = lis.size
+            while (i<max_scrolls || n_events>prev_n_events) && n_events<event_limit
                 i += 1
 
                 prev_n_events = n_events
                 lis = self.event_elements(job: job)
                 n_events = lis.size
-  
-                # scroll down the exact height of the viewport
+
+                # scroll down the exact height of the viewport or the feed container
                 # reference: https://stackoverflow.com/questions/1248081/how-to-get-the-browser-viewport-dimensions
                 l.logs "Scrolling down (#{i.to_s.blue}/#{max_scrolls.to_s.blue} - #{n_events.to_s.blue}/#{event_limit.to_s.blue} events showed up)... "
                 step = self.desc['scrolling_step'] + rand(self.desc['scrolling_step_random'].to_i)
+
+                # old DOM
                 driver.execute_script("window.scrollTo(0, #{i.to_s}*#{step})")
-                #driver.execute_script("window.scrollTo(0, #{i.to_s}*(Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)-#{security_height}))")
+
+                # new DOM
+                # Use a more robust script: compute a rounded pixel amount and try to scroll
+                # the main/feed container first (typical for SPA like LinkedIn). Fall back to
+                # document.scrollingElement or window if necessary.
+                script = <<~JS
+                    var amount = Math.round(#{i} * #{step});
+                    var el = document.querySelector('main') || document.querySelector('div[role="main"]') || document.querySelector('div[aria-label="Feed"]') || document.scrollingElement || document.documentElement || document.body;
+                    if (el && typeof el.scrollTo === 'function') {
+                        el.scrollTo(0, amount);
+                    } else {
+                        window.scrollTo(0, amount);
+                    }
+                JS
+                driver.execute_script(script)
                 sleep(5)
                 l.logf "done".green
 
@@ -122,7 +138,11 @@ module Mass
                 else
                     l.no
                 end
-              end
+            end # while
+            # If we exited because we reached the maximum number of scrolls
+            if i >= max_scrolls && n_events < event_limit
+                raise "Maximum scrolls (#{max_scrolls}) reached. Only #{n_events} events found."
+            end
         end
 
         # Return a hash desriptor of the events found.
