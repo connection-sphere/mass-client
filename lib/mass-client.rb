@@ -17,11 +17,16 @@ module Mass
     @@drownload_path
     @@api_client
     
+    # DEPRECATED
     @@s3_bucket
     @@s3_region
     @@s3_access_key_id
     @@s3_secret_access_key
     @@s3
+
+    # https://github.com/MassProspecting/developer-documentation/issues/828
+    @@my_s3_api_key
+    @@my_s3_url
 
     # set the MassProspecting API client
     #
@@ -54,10 +59,15 @@ module Mass
         js_path: nil, 
         download_path: [],
 
+        # DEPRECATED
         s3_region: nil,
         s3_access_key_id: nil,
         s3_secret_access_key: nil,
-        s3_bucket: nil
+        s3_bucket: nil,
+
+        # https://github.com/MassProspecting/developer-documentation/issues/828
+        my_s3_api_key: nil,
+        my_s3_url: nil
     )
         # call the master to get the URL and port of the subaccount.
         BlackStack::API.set_client(
@@ -101,6 +111,7 @@ module Mass
         @@js_path = js_path
         @@download_path = download_path
 
+        @@s3 = nil
         @@s3_region = s3_region
         @@s3_access_key_id = s3_access_key_id
         @@s3_secret_access_key = s3_secret_access_key
@@ -119,6 +130,10 @@ module Mass
                 secret_access_key: @@s3_secret_access_key
             )
         end
+
+        # Initialize My.S3 API key
+        @@my_s3_api_key = my_s3_api_key
+        @@my_s3_url = my_s3_url
     end
 
     def self.download_path
@@ -147,6 +162,14 @@ module Mass
 
     def self.s3
         @@s3
+    end
+
+    def self.my_s3_api_key
+        @@my_s3_api_key
+    end
+
+    def self.my_s3_url
+        @@my_s3_url
     end
 
 end # module Mass
