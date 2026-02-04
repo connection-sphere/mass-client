@@ -40,8 +40,24 @@ module Mass
                 # return
                 return public_url
             elsif Mass.my_s3_api_key && Mass.my_s3_url
-                my_s3_upload_file(file_path, s3_key)
-                return my_s3_public_url_for(s3_key)
+                relative_path = File.dirname(s3_key.to_s)
+                relative_path = '' if relative_path == '.'
+                filename = File.basename(s3_key.to_s)
+                raise MyS3Error, 'Remote filename is required' if filename.to_s.strip.empty?
+
+                begin
+                    client = my_s3_client
+                    client.upload_file(
+                        file_path: file_path,
+                        path: relative_path,
+                        filename: filename,
+                        ensure_path: true
+                    )
+                    response = client.get_public_url(path: relative_path, filename: filename)
+                    return response['public_url']
+                rescue MyS3::Client::Error => e
+                    raise MyS3Error, e.message
+                end
             end
         end
   
@@ -54,7 +70,11 @@ module Mass
                 )
                 return true
             elsif Mass.my_s3_api_key && Mass.my_s3_url
-                ensure_my_s3_path_exists(folder_name)
+                begin
+                    my_s3_client.ensure_folder_chain(folder_name)
+                rescue MyS3::Client::Error => e
+                    raise MyS3Error, e.message
+                end
                 return true
             end 
         end
@@ -287,120 +307,18 @@ module Mass
 
         private
 
-        def ensure_my_s3_path_exists(path)
-            sanitized = path.to_s.strip.gsub(%r{^/+|/+$}, '')
-            return true if sanitized.empty?
+        def my_s3_client
+            require 'my_s3/client'
 
-            current = ''
-            sanitized.split('/').each do |segment|
-                parent = current
-                begin
-                    my_s3_json_post('/create_folder.json', {
-                        path: parent,
-                        folder_name: segment
-                    })
-                rescue MyS3Error => e
-                    raise unless e.message =~ /folder already exists/i
-                end
-                current = parent.empty? ? segment : [parent, segment].join('/').gsub(%r{/+}, '/').sub(%r{^/+}, '')
-            end
+            base_url = Mass.my_s3_url.to_s.strip
+            api_key = Mass.my_s3_api_key.to_s.strip
+            raise MyS3Error, 'Mass.my_s3_url is not configured' if base_url.empty?
+            raise MyS3Error, 'Mass.my_s3_api_key is not configured' if api_key.empty?
 
-            true
-        end
-
-        def my_s3_upload_file(local_path, remote_path)
-            raise MyS3Error, 'Local file not found' unless File.file?(local_path)
-
-            relative_path = File.dirname(remote_path.to_s)
-            relative_path = '' if relative_path == '.'
-            filename = File.basename(remote_path.to_s).to_s
-            raise MyS3Error, 'Remote filename is required' if filename.strip.empty?
-
-            uri = my_s3_uri_for('/upload.json')
-            boundary = "----MassMyS3#{SecureRandom.hex(12)}"
-            request = Net::HTTP::Post.new(uri)
-            request['X-API-Key'] = my_s3_api_key!
-            request['Content-Type'] = "multipart/form-data; boundary=#{boundary}"
-            request.body = build_my_s3_multipart(boundary, relative_path, filename, local_path)
-
-            response = my_s3_http(uri).request(request)
-            json = parse_my_s3_json(response.body)
-            return json if response.is_a?(Net::HTTPSuccess) && json['success']
-
-            message = json.dig('error', 'message') || response.body
-            raise MyS3Error, message
-        end
-
-        def my_s3_public_url_for(remote_path)
-            dir = File.dirname(remote_path.to_s)
-            dir = '' if dir == '.'
-            filename = File.basename(remote_path.to_s)
-            raise MyS3Error, 'Filename is required for public URL generation' if filename.to_s.strip.empty?
-
-            response = my_s3_json_post('/get_public_url.json', {
-                path: dir,
-                filename: filename
-            })
-
-            response['public_url']
-        end
-
-        def build_my_s3_multipart(boundary, relative_path, filename, local_path)
-            body = []
-            body << "--#{boundary}\r\n"
-            body << "Content-Disposition: form-data; name=\"path\"\r\n\r\n"
-            body << "#{relative_path}\r\n"
-            body << "--#{boundary}\r\n"
-            body << "Content-Disposition: form-data; name=\"file\"; filename=\"#{filename}\"\r\n"
-            body << "Content-Type: application/octet-stream\r\n\r\n"
-            body << File.binread(local_path)
-            body << "\r\n--#{boundary}--\r\n"
-            body.join
-        end
-
-        def my_s3_json_post(endpoint, payload)
-            uri = my_s3_uri_for(endpoint)
-            request = Net::HTTP::Post.new(uri)
-            request['Content-Type'] = 'application/json'
-            request['X-API-Key'] = my_s3_api_key!
-            request.body = JSON.generate(payload)
-
-            response = my_s3_http(uri).request(request)
-            json = parse_my_s3_json(response.body)
-            return json if response.is_a?(Net::HTTPSuccess) && json['success']
-
-            message = json.dig('error', 'message') || response.body
-            raise MyS3Error, message
-        end
-
-        def parse_my_s3_json(body)
-            return {} if body.nil? || body.strip.empty?
-            JSON.parse(body)
-        rescue JSON::ParserError
-            raise MyS3Error, "Invalid JSON response: #{body}"
-        end
-
-        def my_s3_uri_for(endpoint)
-            normalized = my_s3_base_url!
-            URI.join(normalized, endpoint.to_s.sub(%r{^/+}, ''))
-        end
-
-        def my_s3_http(uri)
-            http = Net::HTTP.new(uri.host, uri.port)
-            http.use_ssl = uri.scheme == 'https'
-            http
-        end
-
-        def my_s3_base_url!
-            base = Mass.my_s3_url.to_s.strip
-            raise MyS3Error, 'Mass.my_s3_url is not configured' if base.empty?
-            base.end_with?('/') ? base : "#{base}/"
-        end
-
-        def my_s3_api_key!
-            key = Mass.my_s3_api_key.to_s.strip
-            raise MyS3Error, 'Mass.my_s3_api_key is not configured' if key.empty?
-            key
+            @my_s3_client ||= MyS3::Client.new(
+                base_url: base_url,
+                api_key: api_key
+            )
         end
 
     end # class Profile
