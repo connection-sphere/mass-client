@@ -90,7 +90,7 @@ module Mass
         # - url: Internet address of the image to download from the website and upload to dropbox.
         # - dropbox_folder: Dropbox folder name to store the image.
         #                
-        def download_image_0(url, dropbox_folder = nil, s3_optimization: true)
+        def download_image_0(url, dropbox_folder = nil, s3_optimization: false)
             raise "Either dropbox_folder parameter or self.desc['id_account'] are required." if dropbox_folder.nil? && self.desc['id_account'].nil?
             dropbox_folder = self.desc['id_account'] if dropbox_folder.nil?
             
