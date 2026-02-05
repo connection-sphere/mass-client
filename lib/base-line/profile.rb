@@ -171,7 +171,7 @@ module Mass
             # Proceed with Dropbox operations
             year = Time.now.year.to_s.rjust(4, '0')
             month = Time.now.month.to_s.rjust(2, '0')
-            folder = dropbox_folder #"/massprospecting.rpa/#{dropbox_folder}.#{year}.#{month}"
+            folder = "#{dropbox_folder}/leads" #"/massprospecting.rpa/#{dropbox_folder}.#{year}.#{month}"
             path = "#{folder}/#{filename}"
             create_s3_folder(folder)
 

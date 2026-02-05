@@ -244,7 +244,11 @@ module Mass
         # return the URL of the file
         def snapshot(dropbox_folder=nil)
             raise "Either dropbox_folder parameter or self.desc['id_account'] are required." if dropbox_folder.nil? && self.desc['id_account'].nil?
-            dropbox_folder = self.desc['id_account'] if dropbox_folder.nil?
+            if dropbox_folder.nil?
+                dropbox_folder = self.desc['id_account'] 
+            else
+                dropbox_folder = "#{self.desc['id_account']}/#{dropbox_folder}"
+            end
             # parameters
             id = SecureRandom.uuid
             filename = "#{id}.html"
