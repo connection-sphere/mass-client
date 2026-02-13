@@ -9,7 +9,7 @@ require 'timeout'
 require 'base64'
 require 'adspower-client'
 require 'aws-sdk-s3' # Ensure the AWS SDK for S3 is installed
-require 'mini_magick' # https://github.com/MassProspecting/docs/issues/368
+require 'mini_magick' # https://github.com/connection-sphere/docs/issues/368
 
 # mass client configuration
 module Mass
@@ -24,20 +24,20 @@ module Mass
     @@s3_secret_access_key
     @@s3
 
-    # https://github.com/MassProspecting/developer-documentation/issues/828
+    # https://github.com/connection-sphere/developer-documentation/issues/828
     @@my_s3_api_key
     @@my_s3_url
 
-    # set the MassProspecting API client
+    # set the ConnectionSphere API client
     #
     # Parameters:
     #
-    # api_key: Mandatory. The API key of your MassProspecting account.
+    # api_key: Mandatory. The API key of your ConnectionSphere account.
     # subaccount: Optional. The name of the subaccount you want to work with. If you provide a subaccount, the SDK will call the master to get the URL and port of the subaccount. Default is nil.
     # 
-    # api_url: Optional. The URL of the MassProspecting API. Default is 'https://massprospecting.com'.
-    # api_port: Optional. The port of the MassProspecting API. Default is 443.
-    # api_version: Optional. The version of the MassProspecting API. Default is '1.0'.
+    # api_url: Optional. The URL of the ConnectionSphere API. Default is 'https://connectionsphere.com'.
+    # api_port: Optional. The port of the ConnectionSphere API. Default is 443.
+    # api_version: Optional. The version of the ConnectionSphere API. Default is '1.0'.
     #
     # backtrace: Optional. If true, the backtrace of the exceptions will be returned by the access points. If false, only an error description is returned. Default is false.
     # 
@@ -50,7 +50,7 @@ module Mass
         api_key: ,
         subaccount: nil,
 
-        api_url: 'https://massprospecting.com', 
+        api_url: 'https://connectionsphere.com', 
         api_port: 443,
         api_version: '1.0',
 
@@ -65,7 +65,7 @@ module Mass
         s3_secret_access_key: nil,
         s3_bucket: nil,
 
-        # https://github.com/MassProspecting/developer-documentation/issues/828
+        # https://github.com/connection-sphere/developer-documentation/issues/828
         my_s3_api_key: nil,
         my_s3_url: nil
     )

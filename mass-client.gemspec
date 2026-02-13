@@ -2,10 +2,10 @@ Gem::Specification.new do |s|
     s.name        = 'mass-client'
     s.version     = '1.0.40'
     s.date        = '2026-02-05'
-    s.summary     = "Ruby library for MassProspecting API."
-    s.description = "Ruby library for MassProspecting API."
+    s.summary     = "Ruby library for ConnectionSphere API."
+    s.description = "Ruby library for ConnectionSphere API."
     s.authors     = ["Leandro Daniel Sardi"]
-    s.email       = 'leandro@massprospecting.com'
+    s.email       = 'leandro@connectionsphere.com'
     s.files       = [
       'lib/base-line/ai_agent.rb',
       'lib/base-line/channel.rb',
@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
       'lib/first-line/profile_rpa.rb',
       'lib/mass-client.rb',
     ]
-    s.homepage    = 'https://github.com/massprospecting/mass-client'
+    s.homepage    = 'https://github.com/connection-sphere/mass-client'
     s.license     = 'MIT'
     s.add_runtime_dependency 'timeout', '~> 0.4.1'
     s.add_runtime_dependency 'base64', '~> 0.2.0'

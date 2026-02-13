@@ -4,7 +4,7 @@ require 'pry'
 Mass.set(
     # mandatory parameters
     api_key: '4cb865f4-fa4f-4c2f-8456-d366de44e13a',
-    subaccount: 'MassProspecting',
+    subaccount: 'ConnectionSphere',
     # connect to development environment
     api_url: 'http://127.0.0.1', 
     api_port: 3000,
@@ -20,7 +20,7 @@ Mass::Lead.upsert({
     'job_title' => 'Founder & CEO',
     'country' => 'Argentina',
     'timezone' => 'America/Argentina/Buenos_Aires',
-    'email' => 'leandro@massprospecting.com',
+    'email' => 'leandro@connectionsphere.com',
     'facebook' => 'https://www.facebook.com/leandro.sardi',
     'linkedin' => 'https://www.linkedin.com/in/leandro-daniel-sardi/',
     'tags' => ['testing'],

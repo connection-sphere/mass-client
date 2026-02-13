@@ -5,13 +5,13 @@
 
 # Mass-Client
 
-Ruby client for MassProspecting API
+Ruby client for ConnectionSphere API
 
 ## Table of Contents
 
 1. [Getting Started](#1-getting-started)
 
-   1.1. [Install Ruby Gem of MassProspecting](#11-install-ruby-gem-of-massprospecting)
+   1.1. [Install Ruby Gem of ConnectionSphere](#11-install-ruby-gem-of-connectionsphere)
 
    1.2. [Setup the Client](#12-setup-the-client)
 
@@ -42,7 +42,7 @@ Ruby client for MassProspecting API
 
 Follow the steps below to submit your first lead.
 
-### 1.1. Install Ruby Gem of MassProspecting
+### 1.1. Install Ruby Gem of ConnectionSphere
 
 ```bash
 gem install mass-client
@@ -50,9 +50,9 @@ gem install mass-client
 
 ### 1.2. Setup the Client
 
-1. Follow the steps in [this article](https://github.com/MassProspecting/docs/blob/main/api/01-getting-api-key.md) and get your MassProspecting API key.
+1. Follow the steps in [this article](https://github.com/connection-sphere/docs/blob/main/api/01-getting-api-key.md) and get your ConnectionSphere API key.
 
-2. Setup your MassProspecting client.
+2. Setup your ConnectionSphere client.
 
 ```ruby
 require 'mass-client'
@@ -65,7 +65,7 @@ Mass.set(
 
 ### 1.3. Create Tags for Your Leads and Companies
 
-Tags are a key part of **MassProspecting**.
+Tags are a key part of **ConnectionSphere**.
 
 Both, **leads** and **companies** can be tagged for further workflows configuration.
 
@@ -98,7 +98,7 @@ Mass::Lead.upsert({
 
 Note:
 
-1. The picture of the lead will be download from the web and stored in a private repository of MassProspecting for furter reference.
+1. The picture of the lead will be download from the web and stored in a private repository of ConnectionSphere for furter reference.
 If you call the `upsert` with a second time with the same value in `picture_url`, the operation of storing the image will be skipped.
 
 2. If you call the `upsert` with a second time missing some fields (e.g.: `middle_name`), such a value won't be erased.
@@ -364,11 +364,11 @@ Here the full list of the parameters supported:
 
 | Parameter              | Type               | Description                                                                                     | Default Value                 |
 |------------------------|--------------------|-------------------------------------------------------------------------------------------------|-------------------------------|
-| `api_key`              | String             | The API key of your MassProspecting account.                                                    | Required                      |
+| `api_key`              | String             | The API key of your ConnectionSphere account.                                                    | Required                      |
 | `subaccount`           | String (Optional)  | The name of the subaccount you want to work with.                                               | `nil`                         |
-| `api_url`              | String (Optional)  | The URL of the MassProspecting API.                                                             | `'https://massprospecting.com'` |
-| `api_port`             | Integer (Optional) | The port of the MassProspecting API.                                                            | `443`                         |
-| `api_version`          | String (Optional)  | The version of the MassProspecting API.                                                         | `'1.0'`                       |
+| `api_url`              | String (Optional)  | The URL of the ConnectionSphere API.                                                             | `'https://connectionsphere.com'` |
+| `api_port`             | Integer (Optional) | The port of the ConnectionSphere API.                                                            | `443`                         |
+| `api_version`          | String (Optional)  | The version of the ConnectionSphere API.                                                         | `'1.0'`                       |
 | `backtrace`            | Boolean (Optional) | If true, the backtrace of the exceptions will be returned by the access points. If false, only an error description is returned. | `false`                       |
 | `js_path`              | String (Optional)  | The path to the JavaScript file to be used by the SDK.                                          | `nil`                         |
 | `download_path`        | String or Array (Optional) | The path to the download folder(s) to be used by the SDK.                                       | `[]`                          |

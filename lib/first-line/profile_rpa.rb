@@ -220,7 +220,7 @@ module Mass
             # take screenshot using selenium driver and save it into the /tmp folder
             self.driver.save_screenshot(tmp_path)
             # AWS/S3 optimization - Reduce the resolution of the screenshot
-            # Reference: https://github.com/MassProspecting/docs/issues/368
+            # Reference: https://github.com/connection-sphere/docs/issues/368
             if s3_optimization
                 image = MiniMagick::Image.open(tmp_path)
                 image.format "jpeg"
@@ -232,7 +232,7 @@ module Mass
             # code
             year = Time.now.year.to_s.rjust(4,'0')
             month = Time.now.month.to_s.rjust(2,'0')
-            folder = dropbox_folder #"/massprospecting.rpa/#{dropbox_folder}.#{year}.#{month}"
+            folder = dropbox_folder #"/connectionsphere.rpa/#{dropbox_folder}.#{year}.#{month}"
             path = "#{folder}/#{filename}"
             create_s3_folder(folder)
             ret = upload_file_to_s3(tmp_path, path)
@@ -258,7 +258,7 @@ module Mass
             # code
             year = Time.now.year.to_s.rjust(4,'0')
             month = Time.now.month.to_s.rjust(2,'0')
-            folder = dropbox_folder #"/massprospecting.bots/#{dropbox_folder}.#{year}.#{month}"
+            folder = dropbox_folder #"/connectionsphere.bots/#{dropbox_folder}.#{year}.#{month}"
             path = "#{folder}/#{filename}"
             create_s3_folder(folder)
             ret = upload_file_to_s3(tmp_path, path)
@@ -284,7 +284,7 @@ module Mass
                     read_timeout: read_timeout 
                 )
 
-                # this exception-catch is because of the glitch: https://github.com/massprospecting/hub/issues/20
+                # this exception-catch is because of the glitch: https://github.com/connection-sphere/hub/issues/20
                 begin
                     self.class.buffer_driver.manage.window.resize_to(self.desc['browser_width'], self.desc['browser_height'])
                 rescue  Errno::ECONNREFUSED,

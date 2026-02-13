@@ -158,7 +158,7 @@ module Mass
             end
             
             # AWS/S3 optimization - Reduce the resolution of the screenshot
-            # Reference: https://github.com/MassProspecting/docs/issues/368
+            # Reference: https://github.com/connection-sphere/docs/issues/368
             if s3_optimization
                 image = MiniMagick::Image.open(tmp_path)
                 image.format "jpeg"
@@ -171,7 +171,7 @@ module Mass
             # Proceed with Dropbox operations
             year = Time.now.year.to_s.rjust(4, '0')
             month = Time.now.month.to_s.rjust(2, '0')
-            folder = "#{dropbox_folder}/leads" #"/massprospecting.rpa/#{dropbox_folder}.#{year}.#{month}"
+            folder = "#{dropbox_folder}/leads" #"/connectionsphere.rpa/#{dropbox_folder}.#{year}.#{month}"
             path = "#{folder}/#{filename}"
             create_s3_folder(folder)
 
@@ -184,7 +184,7 @@ module Mass
             # Return the URL of the file in Dropbox
             # 
             # Add a timeout to wait the file is present in the cloud.
-            # Reference: https://github.com/MassProspecting/docs/issues/320
+            # Reference: https://github.com/connection-sphere/docs/issues/320
             ret
         end
                 

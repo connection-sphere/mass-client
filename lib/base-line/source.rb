@@ -128,7 +128,7 @@ module Mass
                 l.logf "done".green
 
                 # Save money - Disable jobs screenshots
-                # https://github.com/MassProspecting/docs/issues/494
+                # https://github.com/connection-sphere/docs/issues/494
                 #
                 # screenshot
                 l.logs 'Screenshot... '
